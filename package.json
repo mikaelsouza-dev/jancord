@@ -1,0 +1,71 @@
+{
+  "name": "jancord",
+  "productName": "Jancord",
+  "version": "1.0.0",
+  "description": "Ligação de voz e tela direta entre dois PCs.",
+  "main": "electron/main.js",
+  "author": "Jancord",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikaelsouza-dev/jancord.git"
+  },
+  "homepage": "https://github.com/mikaelsouza-dev/jancord",
+  "bugs": {
+    "url": "https://github.com/mikaelsouza-dev/jancord/issues"
+  },
+  "scripts": {
+    "start": "electron .",
+    "second": "electron . --second",
+    "dist": "electron-builder --win --publish never",
+    "release": "electron-builder --win --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2",
+    "mqtt": "^5.10.4",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "electron": "^38.2.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "dev.mikaelsouza.jancord",
+    "productName": "Jancord",
+    "copyright": "Jancord",
+    "artifactName": "${productName}-Setup-${version}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "package.json"
+    ],
+    "icon": "src/icon.png",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "shortcutName": "Jancord",
+      "uninstallDisplayName": "Jancord",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "mikaelsouza-dev",
+      "repo": "jancord",
+      "releaseType": "release"
+    }
+  }
+}

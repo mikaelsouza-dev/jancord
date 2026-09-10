@@ -1,0 +1,10 @@
+node_modules/
+.tmp-second/
+.userdata/
+dist/
+out/
+*.log
+.electron-err.txt
+.electron-out.txt
+.DS_Store
+Thumbs.db

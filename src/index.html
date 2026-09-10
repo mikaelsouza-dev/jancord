@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' ws: wss: http: https:;" />
+  <title>Jancord</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!--
+    THESIS: A 1:1 patch cable between two PCs — not a Discord clone with servers, chat, or accounts.
+    OWN-WORLD: Warm black faceplate, copper live contacts, acid-lime signal LEDs, stencil wordmark (Chakra Petch) + readable body (Atkinson Hyperlegible).
+    STORY: Type a name, open a network, plug into a friend. Call and share a screen with PC audio.
+    FIRST VIEWPORT: Left jack is you (name plate). Right jack is the friend. Center is the patch form (create/join).
+    FORM: Broadcast patchbay / equipment faceplate.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+  -->
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="led" id="led" data-state="idle" aria-hidden="true"></span>
+        <h1>Jancord <span class="ver" id="appVersion"></span></h1>
+      </div>
+      <p class="status" id="statusLine">Só um nome. Sem conta.</p>
+    </header>
+    <div id="updateBar" class="update-bar" hidden>
+      <p id="updateText">Atualização pronta.</p>
+      <button type="button" id="btn-update" class="primary">Reiniciar e atualizar</button>
+    </div>
+
+    <section id="view-home" class="view home" hidden>
+      <div class="jacks">
+        <article class="jack jack-you">
+          <svg class="jack-svg" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" />
+            <circle cx="60" cy="60" r="28" />
+            <circle cx="60" cy="60" r="10" />
+          </svg>
+          <label class="field">
+            <span>Seu nome</span>
+            <input id="nickname" type="text" maxlength="24" autocomplete="nickname" placeholder="como o amigo te vê" />
+          </label>
+        </article>
+
+        <svg class="cable" id="cableHome" viewBox="0 0 280 90" aria-hidden="true">
+          <path d="M8 28 C 80 28, 80 72, 140 72 S 200 28, 272 28" />
+        </svg>
+
+        <article class="jack jack-friend">
+          <svg class="jack-svg" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" />
+            <circle cx="60" cy="60" r="28" />
+            <circle cx="60" cy="60" r="10" />
+          </svg>
+          <p class="jack-caption" id="friendHint">amigo</p>
+        </article>
+      </div>
+
+      <div class="patch">
+        <form id="form-create" class="plate" autocomplete="off">
+          <h2>Abrir uma rede</h2>
+          <p>O amigo entra com o mesmo nome e a mesma chave. Tipo Hamachi, sem instalar VPN.</p>
+          <label class="field">
+            <span>Nome da rede</span>
+            <input id="create-name" type="text" maxlength="32" placeholder="sala-do-pc" required />
+          </label>
+          <label class="field">
+            <span>Chave</span>
+            <div class="key-row">
+              <input id="create-key" type="text" maxlength="8" spellcheck="false" />
+              <button type="button" id="btn-reroll" class="ghost">Nova</button>
+            </div>
+          </label>
+          <button type="submit" class="primary">Abrir rede</button>
+        </form>
+
+        <form id="form-join" class="plate plate-join" autocomplete="off">
+          <h2>Entrar</h2>
+          <label class="field">
+            <span>Convite ou nome da rede</span>
+            <input id="join-invite" type="text" placeholder="JANCORD/1/… ou o nome da sala" />
+          </label>
+          <label class="field">
+            <span>Chave (se não colou o convite)</span>
+            <input id="join-key" type="text" maxlength="8" spellcheck="false" placeholder="ABC-234" />
+          </label>
+          <label class="field">
+            <span>IP do amigo (opcional)</span>
+            <input id="join-host" type="text" placeholder="192.168.0.10 ou o IP do Radmin" />
+          </label>
+          <button type="submit" class="secondary">Conectar</button>
+        </form>
+      </div>
+
+      <aside class="lan" id="lanBox">
+        <h2>Na sua rede local</h2>
+        <ul id="lanList"></ul>
+        <p class="muted" id="lanEmpty">No mesmo Wi‑Fi, manda o convite. O amigo cola e entra.</p>
+      </aside>
+    </section>
+
+    <section id="view-room" class="view room" hidden>
+      <div class="stage">
+        <video id="remoteVideo" autoplay playsinline></video>
+        <div class="stage-empty" id="stageEmpty">
+          <p id="stageTitle">Esperando o amigo plugar.</p>
+          <p class="muted" id="stageHint">Manda o convite. Quando ele entrar, liga ou tela.</p>
+        </div>
+        <div class="pip" id="pip" hidden>
+          <video id="localVideo" autoplay muted playsinline></video>
+        </div>
+        <div class="hud-top">
+          <p id="peerLabel">—</p>
+          <p id="rttLabel"></p>
+        </div>
+      </div>
+
+      <aside class="invite-rail">
+        <h2 id="roomName">rede</h2>
+        <p class="key-display" id="roomKey"></p>
+        <button type="button" id="btn-copy" class="secondary">Copiar convite</button>
+        <p class="muted" id="inviteHint">Cola no WhatsApp do amigo. Sem cadastro do lado dele também.</p>
+        <ul class="peer-list" id="peerList"></ul>
+      </aside>
+
+      <nav class="deck" aria-label="Controles da ligação">
+        <button type="button" id="btn-mic" class="deck-btn" aria-pressed="true" title="Microfone">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3Z"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg>
+          <span>Mic</span>
+        </button>
+        <button type="button" id="btn-deafen" class="deck-btn" aria-pressed="false" title="Ouvir">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 16 0v5a2 2 0 0 1-2 2h-1v-7M4 12v5a2 2 0 0 0 2 2h1v-7"/></svg>
+          <span>Ouvir</span>
+        </button>
+        <button type="button" id="btn-call" class="deck-btn deck-call" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4l1.5 4-2 1.5a12 12 0 0 0 7 7L18 14.5 22 16v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 2-2Z"/></svg>
+          <span>Ligar</span>
+        </button>
+        <button type="button" id="btn-share" class="deck-btn deck-share" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span>Telar</span>
+        </button>
+        <button type="button" id="btn-leave" class="deck-btn deck-leave">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h6a4 4 0 0 1 0 8H8M8 6 5 9l3 3"/></svg>
+          <span>Sair</span>
+        </button>
+      </nav>
+    </section>
+  </div>
+
+  <dialog id="picker" class="picker">
+    <form method="dialog" id="picker-form">
+      <h2>O que você quer telar?</h2>
+      <div class="picker-grid" id="pickerGrid"></div>
+      <label class="check">
+        <input type="checkbox" id="share-audio" checked />
+        Incluir som do PC
+      </label>
+      <p class="muted">O Windows manda o áudio do computador inteiro, não só de uma janela. Usa fone pra não ter eco.</p>
+      <div class="picker-actions">
+        <button type="submit" value="cancel" class="ghost">Cancelar</button>
+        <button type="submit" value="ok" class="primary" id="pickerOk" disabled>Telar isso</button>
+      </div>
+    </form>
+  </dialog>
+
+  <audio id="remoteAudio" autoplay></audio>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
