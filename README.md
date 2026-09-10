@@ -6,11 +6,14 @@ Voz e tela vão **direto de PC pra PC**. Hamachi/Radmin **não é obrigatório**
 
 ## Baixar (pra usar de verdade)
 
+Como o projeto funciona, commits e release: **[PROJETO.md](PROJETO.md)**.
+
 Link sempre da última versão:
 
 **https://github.com/mikaelsouza-dev/jancord/releases/latest**
 
-1. Baixa `Jancord-Setup-x.x.x.exe`
+1. Baixa **`Jancord-Setup-x.x.x.exe`** — o que **termina em `.exe`**.  
+   **Não** baixe `.exe.blockmap` nem `latest.yml`. O `.blockmap` não abre; é só pro auto-update.
 2. Instala (Windows pode avisar “Windows protegeu o PC” — é porque o app ainda não tem certificado pago. *Mais informações* → *Executar assim mesmo*)
 3. Abre o **Jancord** no menu Iniciar
 
