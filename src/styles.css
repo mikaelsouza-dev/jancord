@@ -16,7 +16,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { height: 100%; }
+html, body { height: 100%; overflow: hidden; }
 body {
   margin: 0;
   background:
@@ -27,6 +27,7 @@ body {
   font-size: 16px;
   line-height: 1.45;
 }
+[hidden] { display: none !important; }
 
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -84,17 +85,23 @@ p { margin: 0 0 0.85rem; }
 .led[data-state="connected"] { background: var(--lime); box-shadow: 0 1px 10px rgba(212,245,66,.55); }
 .led[data-state="live"] { background: var(--lime); box-shadow: 0 1px 12px rgba(212,245,66,.8); }
 
-.view { flex: 1; min-height: 0; height: auto; }
-.home {
+.view {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+.home:not([hidden]) {
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 1.25rem;
-  padding: 1.25rem 1.5rem 1.4rem;
+  grid-template-rows: auto auto auto;
+  align-content: start;
+  gap: 1rem;
+  padding: 1rem 1.5rem 1.2rem;
+  overflow: auto;
 }
 
 .jacks {
   display: grid;
-  grid-template-columns: 1fr minmax(120px, 280px) 1fr;
+  grid-template-columns: 1fr minmax(80px, 200px) 1fr;
   align-items: center;
   gap: 0.5rem;
 }
@@ -102,22 +109,22 @@ p { margin: 0 0 0.85rem; }
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 18px;
-  padding: 1.1rem 1.2rem 1.2rem;
+  padding: 0.85rem 1.1rem 1rem;
   box-shadow: var(--shadow);
   display: grid;
   justify-items: center;
-  gap: 0.7rem;
+  gap: 0.5rem;
 }
 .jack-svg {
-  width: 92px;
-  height: 92px;
+  width: 64px;
+  height: 64px;
   fill: none;
   stroke: #8a7b63;
   stroke-width: 3;
 }
 .jack-you .jack-svg { stroke: var(--copper-hot); }
 .jack-caption { margin: 0; color: var(--ink-dim); font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.08em; }
-.cable { width: 100%; height: 70px; overflow: visible; }
+.cable { width: 100%; height: 48px; overflow: visible; }
 .cable path {
   fill: none;
   stroke: #6a5b46;
@@ -135,7 +142,7 @@ p { margin: 0 0 0.85rem; }
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 18px;
-  padding: 1.25rem 1.3rem 1.35rem;
+  padding: 1.05rem 1.2rem 1.15rem;
   box-shadow: var(--shadow);
 }
 .plate-join { background: var(--panel-2); }
@@ -188,13 +195,14 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   padding: 0.45rem 0.85rem;
 }
 
-.room {
+.room:not([hidden]) {
   display: grid;
-  grid-template-columns: 1fr 280px;
-  grid-template-rows: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-rows: minmax(0, 1fr) auto;
   grid-template-areas:
     "stage rail"
     "deck deck";
+  overflow: hidden;
 }
 .stage {
   grid-area: stage;
@@ -251,6 +259,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+  min-width: 0;
+  overflow: auto;
 }
 .key-display {
   font-family: var(--font-display);
@@ -353,5 +363,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .jacks { grid-template-columns: 1fr; }
   .cable { display: none; }
   .patch { grid-template-columns: 1fr; }
-  .room { grid-template-columns: 1fr; grid-template-areas: "stage" "rail" "deck"; }
+  .room:not([hidden]) {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas: "stage" "rail" "deck";
+  }
 }

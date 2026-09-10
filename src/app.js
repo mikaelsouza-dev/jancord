@@ -68,6 +68,7 @@ function setStatus(text, led) {
 function show(view) {
   ui.home.hidden = view !== 'home'
   ui.room.hidden = view !== 'room'
+  document.body.dataset.view = view
 }
 
 function toastError(where, message) {
