@@ -25,8 +25,42 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build and publish
+      - name: Build installer
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: npx electron-builder --win --publish always
+        run: npx electron-builder --win --publish never
+
+      - name: Check exe exists
+        shell: pwsh
+        run: |
+          Get-ChildItem dist | Format-Table Name, Length
+          $exe = Get-ChildItem dist -File | Where-Object { $_.Extension -eq ".exe" }
+          if (-not $exe) { throw "O instalador .exe nao foi gerado." }
+          Write-Host "EXE:" $exe.Name $exe.Length
+
+      - name: Keep installer as Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jancord-windows-setup
+          path: |
+            dist/*.exe
+            dist/*.yml
+            dist/*.blockmap
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.exe
+            dist/latest.yml
+            dist/*.blockmap
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          body: |
+            **Baixe o arquivo `Jancord-Setup-x.x.x.exe`.**
+
+            Não baixe `.exe.blockmap` nem `latest.yml` — eles não instalam o app.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

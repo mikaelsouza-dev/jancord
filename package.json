@@ -1,7 +1,7 @@
 {
   "name": "jancord",
   "productName": "Jancord",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ligação de voz e tela direta entre dois PCs.",
   "main": "electron/main.js",
   "author": "Jancord",
@@ -52,6 +52,7 @@
       ]
     },
     "nsis": {
+      "artifactName": "Jancord-Setup-${version}.exe",
       "oneClick": true,
       "perMachine": false,
       "allowToChangeInstallationDirectory": false,

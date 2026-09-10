@@ -47,9 +47,11 @@ Na página do Release aparecem **vários** arquivos. Só um instala:
 
 | Arquivo | O que é | Abre? |
 |---|---|---|
-| **`Jancord-Setup-1.0.0.exe`** | Instalador | **Sim. É esse.** |
-| `Jancord-Setup-1.0.0.exe.blockmap` | Mapa de blocos pro auto-update | **Não.** Não é o app. |
+| **`Jancord-Setup-x.x.x.exe`** | Instalador | **Sim. É esse.** |
+| `Jancord-Setup-x.x.x.exe.blockmap` | Mapa de blocos pro auto-update | **Não.** Não é o app. |
 | `latest.yml` | Lista da versão pro app checar update | **Não.** |
+
+Se a página do Release **só** tiver `.blockmap`, o upload do instalador falhou. Olha a aba Actions do repo (job Release) ou espera a versão nova.
 
 O `.blockmap` o electron-builder **precisa** publicar pra atualização diferencial. Não apaga. Só **não baixa ele**.
 
